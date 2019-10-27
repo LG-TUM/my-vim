@@ -1,0 +1,109 @@
+" Disable spelling
+"set spell!
+
+"c and c++ IDE
+filetype plugin on
+syntax on
+
+"fuzzy finder
+set path+=**
+set wildmenu
+
+"enable relativenumber
+set relativenumber
+
+"transparent Background (include after vim.pathogen)
+hi Normal ctermbg=none
+
+"Toggle relativenumber
+nnoremap <buffer> <C-n> :call NumberToggle()<cr>
+function! NumberToggle()
+    set relativenumber!
+"   if(&relativenumber == 1)
+"       set number
+"   else
+"       set relativenumber
+"   endif
+endfunc
+
+"open c++ manual with Shift+k instead of man
+command! -nargs=+ Cppman silent! call system("tmux split-window cppman " . expand(<q-args>))
+autocmd FileType cpp nnoremap <silent><buffer> K <Esc>:Cppman <cword><CR>
+
+"unmap H and L for vertical movement
+"unmap H
+"unmap L
+
+"map C-y to accept neocomplete popup; Enter as <C-y> + Enter
+inoremap <expr><C-y>  neocomplete#close_popup()
+inoremap <expr> <CR>  pumvisible() ? "\<C-y>" : "\<CR>"
+
+"disable arrow keys
+inoremap  <Up>     <NOP>
+inoremap  <Down>   <NOP>
+inoremap  <Left>   <NOP>
+inoremap  <Right>  <NOP>
+noremap   <Up>     <NOP>
+noremap   <Down>   <NOP>
+noremap   <Left>   <NOP>
+noremap   <Right>  <NOP>
+
+" Restore cursor position, window position, and last search after running a
+" command.
+function! Preserve(command)
+    " Save the last search.
+    let search = @/
+
+    " Save the current cursor position.
+    let cursor_position = getpos('.')
+
+    " Save the current window position.
+    normal! H
+    let window_position = getpos('.')
+    call setpos('.', cursor_position)
+
+    " Execute the command.
+    execute a:command
+
+    " Restore the last search.
+    let @/ = search
+
+    " Restore the previous window position.
+    call setpos('.', window_position)
+    normal! zt
+
+    " Restore the previous cursor position.
+    call setpos('.', cursor_position)
+endfunction
+
+" Re-indent the whole buffer.
+function! Indent()
+    call Preserve('normal gg=G')
+endfunction
+
+"remove trailing whitespaces in the whole buffer
+function! RemoveTrailingWhitespace()
+    call Preserve(':%s/\s\+$//e')
+endfunction
+
+"mapping for buffer navigation
+nnoremap <leader><c-t> :enew<cr>
+nnoremap <leader><c-p> :bp<cr>
+nnoremap <leader><c-n> :bn<cr>
+nnoremap <leader><c-w> :bp <BAR> bd #<cr>
+
+"change color for indent_guide
+:hi IndentGuidesOdd ctermbg=darkgrey
+:hi IndentGuidesEven ctermbg=darkgrey
+
+
+" #### Plugins ####
+" syntactic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
